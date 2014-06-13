@@ -22,7 +22,7 @@ type ServerInfo struct {
 	CurrentPlayers int
 	MaxPlayers     int
 	Version        string
-	Players        PlayerInfo
+	Players        []PlayerInfo
 }
 
 type PlayerInfo struct {

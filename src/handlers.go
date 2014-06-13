@@ -8,7 +8,15 @@ import (
 )
 
 func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
-	servers := GetServers()
+
+	servers := struct {
+		Message     string
+		Servers     []ServerInfo
+		Connections int
+		Activegames int
+	}{
+		"This is stupid", GetServers(), 1337, 10,
+	}
 
 	out, err := json.Marshal(servers)
 	if err != nil {
