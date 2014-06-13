@@ -51,12 +51,11 @@ func UpdateServerAPI(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if IsServer(t.Token) {
-		SetServer(t.Token, t.Status, t.Info)
+	err = SetServer(t.Token, t.Status, t.Info)
+	if err != nil {
 		fmt.Fprintln(rw, "OK")
 	} else {
 		http.Error(rw, "Invalid token", 404)
-		return
 	}
 
 }
