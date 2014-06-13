@@ -7,9 +7,12 @@ import (
 	"net/http"
 )
 
+var debug *bool
+
 func main() {
 	// Get command-line flags
 	listen := flag.String("bind", "127.0.0.1:9902", "Address:Port or Socket where to listen to")
+	debug = flag.Bool("debug", false, "Enable debug messages")
 	flag.Parse()
 
 	InitServers()

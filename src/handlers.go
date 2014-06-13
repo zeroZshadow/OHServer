@@ -22,7 +22,9 @@ func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 
 	out, err := json.Marshal(servers)
 	if err != nil {
-		fmt.Println(err.Error())
+		if *debug {
+			fmt.Println(err.Error())
+		}
 		return
 	}
 
@@ -36,13 +38,13 @@ func AddServerAPI(rw http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&t)
 	if err != nil {
 		http.Error(rw, "Invalid post data", 400)
-		fmt.Println(err.Error())
+		if *debug {
+			fmt.Println(err.Error())
+		}
 		return
 	}
 
 	token := AddServer(t)
-	fmt.Println(token)
-
 	fmt.Fprintln(rw, token)
 }
 
@@ -57,18 +59,19 @@ func UpdateServerAPI(rw http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&t)
 	if err != nil {
 		http.Error(rw, "Invalid post data", 400)
-		fmt.Println(err.Error())
 		return
 	}
 
 	err = SetServer(t.Token, t.Status, t.Info)
 	if err != nil {
 		http.Error(rw, "Invalid token", 404)
-		fmt.Println(err.Error())
+		if *debug {
+			fmt.Println(err.Error())
+		}
+		return
 	} else {
 		fmt.Fprintln(rw, "OK")
 	}
-	fmt.Println("UPDATE OK FOR " + t.Token)
 }
 
 func DeleteServerAPI(rw http.ResponseWriter, req *http.Request) {
@@ -82,5 +85,8 @@ func DeleteServerAPI(rw http.ResponseWriter, req *http.Request) {
 		fmt.Fprintln(rw, "Goodbye!")
 	} else {
 		http.Error(rw, "Invalid token", 404)
+		if *debug {
+			fmt.Println("Tried to delete inexistant server")
+		}
 	}
 }
