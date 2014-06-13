@@ -36,10 +36,12 @@ func AddServerAPI(rw http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&t)
 	if err != nil {
 		http.Error(rw, "Invalid post data", 400)
+		fmt.Println(err.Error())
 		return
 	}
 
 	token := AddServer(t)
+	fmt.Println(token)
 
 	fmt.Fprintln(rw, token)
 }
@@ -55,16 +57,18 @@ func UpdateServerAPI(rw http.ResponseWriter, req *http.Request) {
 	err := decoder.Decode(&t)
 	if err != nil {
 		http.Error(rw, "Invalid post data", 400)
+		fmt.Println(err.Error())
 		return
 	}
 
 	err = SetServer(t.Token, t.Status, t.Info)
 	if err != nil {
 		http.Error(rw, "Invalid token", 404)
+		fmt.Println(err.Error())
 	} else {
 		fmt.Fprintln(rw, "OK")
 	}
-
+	fmt.Println("UPDATE OK FOR " + t.Token)
 }
 
 func DeleteServerAPI(rw http.ResponseWriter, req *http.Request) {
