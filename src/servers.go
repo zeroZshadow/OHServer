@@ -22,11 +22,6 @@ type ServerInfo struct {
 	CurrentPlayers int
 	MaxPlayers     int
 	Version        string
-	Players        []PlayerInfo
-}
-
-type PlayerInfo struct {
-	Nickname string
 }
 
 // We might change how we manage servers, so have some wrappers
