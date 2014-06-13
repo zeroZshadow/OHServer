@@ -75,7 +75,7 @@ func GetServers(getAll bool) []ServerInfo {
 
 	i := 0
 	for k := range Servers {
-		if Servers[k].Status == 0 {
+		if getAll || Servers[k].Status == 0 {
 			list = append(list, Servers[k].Info)
 			i++
 		}
