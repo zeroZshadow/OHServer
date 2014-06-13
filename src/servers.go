@@ -70,7 +70,7 @@ func IsServer(token string) bool {
 }
 
 // Gets a list of all the servers in the map. It also filters on Status == 0
-func GetServers() []ServerInfo {
+func GetServers(getAll bool) []ServerInfo {
 	list := make([]ServerInfo, 0)
 
 	i := 0

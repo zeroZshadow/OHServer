@@ -9,7 +9,7 @@ import (
 
 func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 
-	serverlist := GetServers()
+	serverlist := GetServers(false)
 
 	servers := struct {
 		Message     string
@@ -28,7 +28,21 @@ func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Fprintln(rw, string(out))
+	fmt.Fprintf(rw, string(out))
+}
+
+func FullSListAPI(rw http.ResponseWriter, req *http.Request) {
+	serverlist := GetServers(true)
+
+	out, err := json.Marshal(serverlist)
+	if err != nil {
+		if *debug {
+			fmt.Println(err.Error())
+		}
+		return
+	}
+
+	fmt.Fprintf(rw, string(out))
 }
 
 func AddServerAPI(rw http.ResponseWriter, req *http.Request) {
@@ -45,7 +59,7 @@ func AddServerAPI(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	token := AddServer(t)
-	fmt.Fprintln(rw, token)
+	fmt.Fprintf(rw, token)
 }
 
 func UpdateServerAPI(rw http.ResponseWriter, req *http.Request) {
@@ -66,11 +80,11 @@ func UpdateServerAPI(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		http.Error(rw, "Invalid token", 404)
 		if *debug {
-			fmt.Println(err.Error())
+			fmt.Println("[" + t.Token + "] " + err.Error())
 		}
 		return
 	} else {
-		fmt.Fprintln(rw, "OK")
+		fmt.Fprintf(rw, "OK")
 	}
 }
 
@@ -82,11 +96,11 @@ func DeleteServerAPI(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	if DeleteServer(string(stuff)) {
-		fmt.Fprintln(rw, "Goodbye!")
+		fmt.Fprintf(rw, "Goodbye!")
 	} else {
 		http.Error(rw, "Invalid token", 404)
 		if *debug {
-			fmt.Println("Tried to delete inexistant server")
+			fmt.Println("[" + string(stuff) + "] Tried to delete inexistant server")
 		}
 	}
 }

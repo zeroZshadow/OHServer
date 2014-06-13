@@ -21,6 +21,7 @@ func main() {
 	// GET  - Read stuff
 	g := r.Methods("GET").Subrouter()
 	g.HandleFunc("/", ServerListAPI)
+	g.HandleFunc("/all", FullSListAPI)
 	// POST - Actions
 	p := r.Methods("POST").Subrouter()
 	p.HandleFunc("/add", AddServerAPI)
