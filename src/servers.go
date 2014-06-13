@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"time"
 )
 
@@ -30,41 +31,55 @@ type PlayerInfo struct {
 
 // We might change how we manage servers, so have some wrappers
 
+// Creates the Server map
 func InitServers() {
 	Servers = make(map[string]ServerItem)
 }
 
+// Adds a server to the map
 func AddServer(status int, s ServerInfo) string {
 	token := RandStr(10)
-	SetServer(token, status, s)
+
+	server := ServerItem{
+		Status:     status,
+		Info:       s,
+		Expiration: time.NewTimer(ExpirationTime),
+	}
+
+	go func() {
+		<-server.Expiration.C
+		DeleteServer(token)
+	}()
+
+	Servers[token] = server
+
 	return token
 }
 
-func SetServer(token string, status int, s ServerInfo) {
-	var timer *time.Timer
-	if _, ok := Servers[token]; ok {
-		timer = Servers[token].Expiration
-		timer.Reset(ExpirationTime)
-	} else {
-		timer = time.NewTimer(ExpirationTime)
-		go func() {
-			<-timer.C
-			DeleteServer(token)
-		}()
+// Updates a server in the map
+func SetServer(token string, status int, s ServerInfo) error {
+	if !IsServer(token) {
+		return errors.New("Inexistant server")
 	}
 
 	Servers[token] = ServerItem{
 		Status:     status,
 		Info:       s,
-		Expiration: timer,
+		Expiration: Servers[token].Expiration,
 	}
+
+	Servers[token].Expiration.Reset(ExpirationTime)
+
+	return nil
 }
 
+// Checks if a server is in the map. Returns True if it exists, False otherwise
 func IsServer(token string) bool {
 	_, ok := Servers[token]
 	return ok
 }
 
+// Gets a list of all the servers in the map. It also filters on Status == 0
 func GetServers() []ServerInfo {
 	list := make([]ServerInfo, 0)
 
@@ -79,8 +94,9 @@ func GetServers() []ServerInfo {
 	return list
 }
 
+// Deletes a server in the map, given the right token.
 func DeleteServer(token string) bool {
-	if _, ok := Servers[token]; ok {
+	if IsServer(token) {
 		delete(Servers, token)
 		return true
 	}
