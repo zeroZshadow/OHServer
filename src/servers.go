@@ -37,11 +37,11 @@ func InitServers() {
 }
 
 // Adds a server to the map
-func AddServer(status int, s ServerInfo) string {
+func AddServer(s ServerInfo) string {
 	token := RandStr(10)
 
 	server := new(ServerItem)
-	server.Status = status
+	server.Status = 1
 	server.Info = s
 	server.Expiration = time.NewTimer(ExpirationTime)
 

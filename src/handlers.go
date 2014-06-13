@@ -9,13 +9,15 @@ import (
 
 func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 
+	serverlist := GetServers()
+
 	servers := struct {
 		Message     string
 		Servers     []ServerInfo
 		Connections int
 		Activegames int
 	}{
-		"This is stupid", GetServers(), 1337, 10,
+		"This is stupid", serverlist, 0, len(serverlist),
 	}
 
 	out, err := json.Marshal(servers)
@@ -30,17 +32,14 @@ func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 func AddServerAPI(rw http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
 
-	var t struct {
-		Status int
-		Info   ServerInfo
-	}
+	var t ServerInfo
 	err := decoder.Decode(&t)
 	if err != nil {
 		http.Error(rw, "Invalid post data", 400)
 		return
 	}
 
-	token := AddServer(t.Status, t.Info)
+	token := AddServer(t)
 
 	fmt.Fprintln(rw, token)
 }
@@ -61,9 +60,9 @@ func UpdateServerAPI(rw http.ResponseWriter, req *http.Request) {
 
 	err = SetServer(t.Token, t.Status, t.Info)
 	if err != nil {
-		fmt.Fprintln(rw, "OK")
-	} else {
 		http.Error(rw, "Invalid token", 404)
+	} else {
+		fmt.Fprintln(rw, "OK")
 	}
 
 }
