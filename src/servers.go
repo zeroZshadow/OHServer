@@ -6,7 +6,8 @@ import (
 
 var Servers map[string]ServerItem
 
-const Cooldown = time.Second * 30
+const ExpirationTime = time.Second * 30 // Server Timeout
+const TokenLength = 10                  // Token length in characters
 
 type ServerItem struct {
 	Status     int
@@ -43,9 +44,9 @@ func SetServer(token string, status int, s ServerInfo) {
 	var timer *time.Timer
 	if _, ok := Servers[token]; ok {
 		timer = Servers[token].Expiration
-		timer.Reset(Cooldown)
+		timer.Reset(ExpirationTime)
 	} else {
-		timer = time.NewTimer(Cooldown)
+		timer = time.NewTimer(ExpirationTime)
 		go func() {
 			<-timer.C
 			DeleteServer(token)
@@ -65,12 +66,12 @@ func IsServer(token string) bool {
 }
 
 func GetServers() []ServerInfo {
-	list := make([]ServerInfo, len(Servers))
+	list := make([]ServerInfo, 0)
 
 	i := 0
 	for k := range Servers {
 		if Servers[k].Status == 0 {
-			list[i] = Servers[k].Info
+			list = append(list, Servers[k].Info)
 			i++
 		}
 	}
