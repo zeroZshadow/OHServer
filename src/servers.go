@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var Servers map[string]ServerItem
+var Servers map[string]*ServerItem
 
 const ExpirationTime = time.Second * 30 // Server Timeout
 const TokenLength = 10                  // Token length in characters
@@ -33,18 +33,17 @@ type PlayerInfo struct {
 
 // Creates the Server map
 func InitServers() {
-	Servers = make(map[string]ServerItem)
+	Servers = make(map[string]*ServerItem)
 }
 
 // Adds a server to the map
 func AddServer(status int, s ServerInfo) string {
 	token := RandStr(10)
 
-	server := ServerItem{
-		Status:     status,
-		Info:       s,
-		Expiration: time.NewTimer(ExpirationTime),
-	}
+	server := new(ServerItem)
+	server.Status = status
+	server.Info = s
+	server.Expiration = time.NewTimer(ExpirationTime)
 
 	go func() {
 		<-server.Expiration.C
@@ -62,12 +61,8 @@ func SetServer(token string, status int, s ServerInfo) error {
 		return errors.New("Inexistant server")
 	}
 
-	Servers[token] = ServerItem{
-		Status:     status,
-		Info:       s,
-		Expiration: Servers[token].Expiration,
-	}
-
+	Servers[token].Status = status
+	Servers[token].Info = s
 	Servers[token].Expiration.Reset(ExpirationTime)
 
 	return nil
