@@ -9,7 +9,7 @@ import (
 
 func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 
-	serverlist := GetServers(false)
+	serverlist, count := GetServers(false)
 
 	servers := struct {
 		Message     string
@@ -17,7 +17,7 @@ func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 		Connections int
 		Activegames int
 	}{
-		"This is stupid", serverlist, 0, len(serverlist),
+		"Last version: 15062014", serverlist, count, len(serverlist),
 	}
 
 	out, err := json.Marshal(servers)
@@ -32,7 +32,7 @@ func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 }
 
 func FullSListAPI(rw http.ResponseWriter, req *http.Request) {
-	serverlist := GetServers(true)
+	serverlist, _ := GetServers(true)
 
 	out, err := json.Marshal(serverlist)
 	if err != nil {
