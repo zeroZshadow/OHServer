@@ -3,13 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 )
 
 func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 
-	serverlist, count := GetServers(false)
+	version := mux.Vars(req)["version"]
+	serverlist, count := GetServers(version)
 
 	servers := struct {
 		Message     string
@@ -17,24 +19,10 @@ func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 		Connections int
 		Activegames int
 	}{
-		"Last version: 15062014", serverlist, count, len(serverlist),
+		"Thanks for flying OpenHorus!", serverlist, count, len(serverlist),
 	}
 
 	out, err := json.Marshal(servers)
-	if err != nil {
-		if *debug {
-			fmt.Println(err.Error())
-		}
-		return
-	}
-
-	fmt.Fprintf(rw, string(out))
-}
-
-func FullSListAPI(rw http.ResponseWriter, req *http.Request) {
-	serverlist, _ := GetServers(true)
-
-	out, err := json.Marshal(serverlist)
 	if err != nil {
 		if *debug {
 			fmt.Println(err.Error())

@@ -20,8 +20,7 @@ func main() {
 	r := mux.NewRouter()
 	// GET  - Read stuff
 	g := r.Methods("GET").Subrouter()
-	g.HandleFunc("/", ServerListAPI)
-	g.HandleFunc("/all", FullSListAPI)
+	g.HandleFunc("/{version}", ServerListAPI)
 	// POST - Actions
 	p := r.Methods("POST").Subrouter()
 	p.HandleFunc("/add", AddServerAPI)

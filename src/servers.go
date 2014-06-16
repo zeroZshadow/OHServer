@@ -70,15 +70,16 @@ func IsServer(token string) bool {
 }
 
 // Gets a list of all the servers in the map. It also filters on Status == 0
-func GetServers(getAll bool) ([]ServerInfo, int) {
+func GetServers(version string) ([]ServerInfo, int) {
 	list := make([]ServerInfo, 0)
 
 	i := 0
 	count := 0
 	for k := range Servers {
-		if getAll || Servers[k].Status == 0 {
-			list = append(list, Servers[k].Info)
-			count += Servers[k].Info.CurrentPlayers
+		server := Servers[k].Info
+		if version == server.Version && Servers[k].Status == 0 {
+			list = append(list, server)
+			count += server.CurrentPlayers
 			i++
 		}
 	}
