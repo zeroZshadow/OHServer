@@ -8,8 +8,30 @@ import (
 	"net/http"
 )
 
-func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
+func FullServerListAPI(rw http.ResponseWriter, req *http.Request) {
+	serverlist, count := GetServers("*")
 
+	servers := struct {
+		Message     string
+		Servers     []ServerInfo
+		Connections int
+		Activegames int
+	}{
+		"Thanks for flying OpenHorus!", serverlist, count, len(serverlist),
+	}
+
+	out, err := json.Marshal(servers)
+	if err != nil {
+		if *debug {
+			fmt.Println(err.Error())
+		}
+		return
+	}
+
+	fmt.Fprintf(rw, string(out))
+}
+
+func ServerListAPI(rw http.ResponseWriter, req *http.Request) {
 	version := mux.Vars(req)["version"]
 	serverlist, count := GetServers(version)
 

@@ -77,7 +77,7 @@ func GetServers(version string) ([]ServerInfo, int) {
 	count := 0
 	for k := range Servers {
 		server := Servers[k].Info
-		if version == server.Version && Servers[k].Status == 0 {
+		if (version == server.Version || version == "*") && Servers[k].Status == 0 {
 			list = append(list, server)
 			count += server.CurrentPlayers
 			i++
